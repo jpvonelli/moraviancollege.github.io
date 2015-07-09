@@ -29,6 +29,7 @@
     var end_color = "#002966";
 
     var svg;
+    var svg2;
     var grad_svg;
 
     var projection;
