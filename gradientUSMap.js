@@ -3,7 +3,14 @@
     /*global $, d3, slider, makeCombo*/
 
     var comboExists = false;
+
+    var currMap = -1;
+
+    var gradientMapList = [];
+
     var gradientMap = {};
+
+    //console.log(gradientMap.comboExists);
 
     // Width and Height of the svg
     var w = 800;
@@ -29,7 +36,6 @@
     var end_color;
 
     var svg;
-    var svg2;
     var grad_svg;
 
     var projection;
@@ -42,7 +48,7 @@
     if(q[0] === "Gecko")
     {canZoom=false;}
     function zoomed() {
-        svg.attr("transform", "translate(" + d3.event.translate + 	")scale(" + d3.event.scale + ")");
+        gradientMapList[currMap].svg.attr("transform", "translate(" + d3.event.translate + 	")scale(" + d3.event.scale + ")");
         slider.property("value",  d3.event.scale);
     }
 
@@ -72,7 +78,7 @@
 
         if(canZoom)
         {
-            svg = mapDiv.append("svg")
+            gradientMapList[currMap].svg = mapDiv.append("svg")
                 .attr("style", "border: thin solid gray; border-radius: 5px;")
                 .attr("width", w)
                 .attr("height", h)
@@ -81,7 +87,7 @@
         }
         else
         {
-            svg = mapDiv.append("svg")
+            gradientMapList[currMap].svg = mapDiv.append("svg")
                 .attr("style", "border: thin solid gray; border-radius: 5px;")
                 .attr("width", w)
                 .attr("height", h)
@@ -99,7 +105,7 @@
     function reset() {
         zoom.scale(1);
         zoom.translate([0, 0]);
-        svg.transition().duration(0).
+        gradientMapList[currMap].svg.transition().duration(0).
             attr("transform", "translate(" + zoom.translate() + ") scale(" + zoom.scale() + ")");
     }
 
@@ -154,17 +160,17 @@
         //Define quantize scale to sort data values into buckets of color
         if (current_gradient != -1) {
             color = d3.scale.quantize()
-                .range(makeRange(current_gradient, start_color, end_color));
+                .range(makeRange(current_gradient, gradientMapList[currMap].start_color, gradientMapList[currMap].end_color));
         }
         // this means they want a continuous gradient
         else {
             continuous = true;
         }
 
-        d3.csv(csvUSValueFile, function(data) {
+        d3.csv(gradientMapList[currMap].csvUSValueFile, function(data) {
 
-            min = d3.min(data, function(d) { return +d[feature_desired]; }).toString();
-            max = d3.max(data, function(d) { return +d[feature_desired]; }).toString();
+            min = d3.min(data, function(d) { return +d[gradientMapList[currMap].feature_desired]; }).toString();
+            max = d3.max(data, function(d) { return +d[gradientMapList[currMap].feature_desired]; }).toString();
 
 
             if (!continuous) {
@@ -177,7 +183,7 @@
 
             d3.json(usMapFile, function(json) {
 
-                svg.selectAll("path")
+                gradientMapList[currMap].svg.selectAll("path")
                     .data(json.features)
                     .enter()
                     .append("svg:path")
@@ -189,14 +195,14 @@
                     .attr("stroke-width", "1")
                     .style("fill", function(d) {
                         //Get data value
-                        d.properties.value = getStateValuesFunction(data, d.properties.name);
+                        d.properties.value = gradientMapList[currMap].getStateValuesFunction(data, d.properties.name);
                         var value = d.properties.value;
 
                         if (!continuous && value) {//If value exists…
                             return color(value);
                         }
                         else if (continuous && value) {
-                            return d3.interpolate(start_color, end_color)((value - min)/(max-min));
+                            return d3.interpolate(gradientMapList[currMap].start_color, gradientMapList[currMap].end_color)((value - min)/(max-min));
                         }
                         else {//If value is undefined…
                             return "#ccc";
@@ -292,6 +298,38 @@
         mapSVG.remove();
         return this;
     };
+
+    gradientMap.createNewMap = function(){
+
+        //console.log(gradientMap);
+
+        currMap += 1;
+
+        console.log(currMap);
+
+        gradientMap['start_color'] = start_color;
+        gradientMap['end_color'] = end_color;
+        gradientMap['feature_desired'] = feature_desired;
+        gradientMap['rest_of_filename'] = rest_of_filename;
+        gradientMap['getStateValuesFunction'] = getStateValuesFunction;
+        gradientMap['getCountyValuesFunction'] = getCountyValuesFunction;
+        gradientMap['state_abbreviations'] = state_abbreviations;
+        gradientMap['usMapFile'] = usMapFile;
+        gradientMap['csvUSValueFile'] = csvUSValueFile;
+        gradientMap['countyMapPath'] = countyMapPath;
+        gradientMap['countyValuePath'] = countyValuePath;
+        gradientMap['svg'] = svg;
+
+        gradientMapList.push(jQuery.extend({}, gradientMap));
+
+
+        //console.log(gradientMap);
+
+        return this;
+
+
+
+    }
 
     var rest_of_filename = "poke.csv";
 
@@ -638,7 +676,7 @@
 
                 path = path.projection(projection);
 
-                svg.selectAll("path")
+                gradientMapList[currMap].svg.selectAll("path")
                     .data(json.features)
                     .enter()
                     .append("path")
