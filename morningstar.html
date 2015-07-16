@@ -20,9 +20,9 @@
 	<link rel="stylesheet" href="stylesheets/flexslider.css">
 	<link rel="stylesheet" href="stylesheets/prettyPhoto.css">
 	<link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+	<link rel="stylesheet" href="stylesheets/bootstrap.css">
 
 	<!-- Scripts
-
   ================================================== -->
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
 	<script src="js/jquery.flexslider-min.js"></script>
@@ -30,7 +30,7 @@
 	<script type="text/javascript" src="d3/d3.v3.js"></script>
 	<script type="text/javascript" src="gradientUSMap.js"></script>
 	<script type="text/javascript" src="jscolor/jscolor.js"></script>
-
+	<script src="js/bootstrap.min.js"></script>
 
 
 	<!-- Favicons
@@ -38,7 +38,7 @@
 	<link rel="shortcut icon" href="images/mocostar_icon.png">
 
 </head>
-<body onload="drawTheUSMap('#EBF5FF','#002966');">
+<body onload="drawMaps();">
 
 <!-- Primary Page Layout
 ================================================== -->
@@ -70,10 +70,8 @@
 
 		<div class="sidebar-widget social">
 
-			<h4>Student Developers:</h4>
+			<h4 style="text-align:center">Student Developers:</h4>
 			<p>Megan Biernat, Jason Boccuti, Steve Chakif, Lewis Cooper, William Collins, Jon Diehl, Alec Gerhart, Hansen Huang, Anna Lamoureux, Steve MacDonald, Charles McDonald, Martin Nesbitt, Andrew Reed, Josh Russett, Michael Turnbach, Michael Vitone, John Vonelli</p>
-
-			<hr>
 
 			<h4 style="text-align:center">About the Project</h4>
 
@@ -85,11 +83,10 @@
 
 
 		<div id="pageTitle">
-
+			<br>
 			<p>If you'd like to check out the blog that the group has written about the progress of the project, you can click <a href="http://morningstar.moravian.edu/" style="font-size:14px;color:SkyBlue">here</a>, or for the Github repository for the project is located <a href="https://github.com/MoravianCollege/moraviancollege.github.io" style="font-size:14px;color:SkyBlue">here</a>.</p>
 
 			<h3 style="text-align:center">Map Description</h3>
-
 
 			<p>The Hemoglobin A1c (HA1c) test is a blood test measuring the average blood
 				sugar level over the past 2 to 3 months, and is used to see how well a
@@ -97,26 +94,23 @@
 				the average number of tests done per patient over the number of tests, with an
 				ideal number of 4 tests per year per patient. The Medicare billing data used
 				in this project is collected in 2013. The average poke ratio across the United
-				States is 1.63; State ratio ranges from a minimum of 1.39 to a maximum of 1.79.</p>
-
-			<p>The map below shows poke ratio per state (including Puerto Rico) by Blue-White Scale, while areas without any data available are in gray. You may change the gradient level for more details.</p>
+				States is 1.63; State ratio ranges from a minimum of 1.39 to a maximum of 1.79.
+				The map below shows poke ratio per state (including Puerto Rico) by Blue-White
+				Scale, while areas without any data available are in grey. You may change the
+				gradient level and colors for more details.</p>
 
 			<p>Directions: To navigate the map simply click on any state to enter the state and view county data. To return to the Country Map, click on the state again or click on Reload Map Button.</p>
-
-			<hr>
-
-			<p>*Warning:  Do not scroll over map with Mozilla Firefox! The zoom function is not compatible with it.</p>
-
+			<p>Note - The zoom function is not compatible with Mozilla Firefox.</p>
 		</div>
-
 	</article>
-	
+
 	<article class="sixteen columns main-content">
 
+		<hr>
 
-		<div class="optionsContainer">
+		<div class="row col-xs-12 col-sm-12 col-md-12 col-lg-10 col-lg-offset-1">
 			<ul>
-				<li class="sameLine" style="margin-top:10px;">
+				<li class="sameLine first" style="margin-top:10px;">
 					<button onclick="redraw();">Reload Map</button>
 				</li>
 				<li class="sameLine">
@@ -136,7 +130,7 @@
 			</ul>
 		</div>
 
-		<div id="mapContainer">
+		<div id="mapContainer" class="row">
 
 			<!-- Spinner Animation -->
 			<div id="floatingBarsG" style="visibility: hidden">
@@ -167,17 +161,17 @@
 	</article>
 	<!-- End main Content -->
 </div>
-
 <footer>
+	<div class="row">
+		<div id="footer-base">
+			<div class="container">
+				<div class="two columns">
+					<a href="http://mathcs.moravian.edu/">Moravian College CS Department</a> &copy; 2015
+				</div>
 
-	<div id="footer-base">
-		<div class="container">
-			<div class="eight columns">
-				<a href="http://mathcs.moravian.edu/">Moravian College CS Department</a> &copy; 2015
-			</div>
-
-			<div class="eight columns far-edge">
-				Design by <a href="http://www.opendesigns.org">OD</a>
+				<div class="two columns far-edge">
+					Design by <a href="http://www.opendesigns.org">OD</a>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -187,7 +181,8 @@
 
 
 <!-- USMapPoke.js builds map -->
-<script src="USMapPoke.js">drawTheUSMap();</script>
+<script src="USTestMap.js"></script>
+
 
 <script>
 
@@ -205,27 +200,6 @@
 
 		//drawTheMap();
 
-
-	}
-
-	function drawBottom() {
-
-		var h31 = document.createElement("h3");
-		h31.innerHTML = "Moravian College Summer Team 2015";
-		var ul1 = document.createElement("ul");
-		ul1.style = "list-style-type:none";
-		ul1.innerHTML = "<li>Megan Biernat</li><li>William Collins</li><li>Alec Gerhart</li><li>Anna Lamoureux</li><li>Steve MacDonald</li><li>Charles McDonald</li> <li>Martin Nesbitt</li><li>Andrew Reed</li> <li>Josh Russett</li> <li>Michael Turnbach</li><li>John Vonelli</li>";
-
-		var h32 = document.createElement("h3");
-		h32.innerHTML = "Senior Capstone Contributors Spring 2015";
-		var ul2 = document.createElement("ul");
-		ul2.style = "list-style-type:none";
-		ul2.innerHTML = "<li>Michael Vitone</li><li>Jason Boccuti</li><li>Hansen Huang</li><li>Steve Chakif</li><li>Jon Diehl</li><li>Lewis Cooper</li>";
-
-		document.body.appendChild(h31);
-		document.body.appendChild(ul1);
-		document.body.appendChild(h32);
-		document.body.appendChild(ul2);
 
 	}
 
@@ -259,15 +233,17 @@
 		removeUSMap();
 
 	}
+
+
 	function getColor(input_id){
 		return "#" +  document.getElementById(input_id).color.toString();
 	}
+
 	function redraw(){
 		removeUSMap();
 		drawTheUSMap(String(getColor("min_color_picker")), String(getColor("max_color_picker")));
 	}
 </script>
-
 
 
 <!-- End Document
