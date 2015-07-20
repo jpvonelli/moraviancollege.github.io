@@ -10,12 +10,13 @@
 
     var gradientMap = {};
 
+
     //console.log(gradientMap.comboExists);
 
     // Width and Height of the svg
     var w = 800;
     var h = 600;
-
+    
     var min = "0";
     var max = "0";
     var current_gradient = 2;
@@ -121,6 +122,7 @@
     };
 
     var mouseOver = function(d) {
+
         for(var i = 0; i < currMap + 1; i = i + 1){
             d3.select("#tooltip" + i.toString()).transition().duration(200).style("opacity", 0.9);
             var coord = d3.mouse(this);
@@ -146,6 +148,7 @@
                     .style("left", c_x)
                     .style("top", c_y);
             }
+
         }
     }
 
@@ -268,6 +271,11 @@
         getCountyValuesFunction = function2;
         return this;
     };
+    
+    gradientMap.setDictionaries = function(dictionary_functions) {
+    	list_of_dictionary_functions = dictionary_functions;
+    	return this;
+    }
 
     gradientMap.setColors = function(start, end) {
         start_color = start;
