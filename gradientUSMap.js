@@ -766,7 +766,7 @@
 
                         if (!continuous && value) {//If value exists…
                             return color(value);
-                        }
+                        }=
                         else if (continuous && value) {
                             return d3.interpolate(gradientMapList[mapNum].start_color, gradientMapList[mapNum].end_color)((value - gradientMapList[mapNum].min)/(gradientMapList[mapNum].max-gradientMapList[mapNum].min));
                         }
