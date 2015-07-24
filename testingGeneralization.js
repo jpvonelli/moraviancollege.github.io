@@ -10,61 +10,61 @@ function drawTheTestMap(){
 		var dataState;
 
 		for (i = 0; i < data.length; i++) {
-            //Grab state name
-            dataState = data[i].state;
+			//Grab state name
+			dataState = data[i].state;
 
-            //Grab data value, and convert from string to float
-            if (dataState === stateAbbr) {
-            	return parseFloat(data[i].test);
-        	}
+			//Grab data value, and convert from string to float
+			if (dataState === stateAbbr) {
+				return parseFloat(data[i].test);
+			}
 
 		}
 	};
 
 	var getCountyValuesFunction = function(data, countyName) {
 		//Merge the ag. data and GeoJSON
-        //Loop through once for each ag. data value
+		//Loop through once for each ag. data value
 		var i;
 		var k;
 		var dataCounty;
 		var part;
 		var len;
 		var str;
-        for (i = 0; i < data.length; i++) {
-            //Grab state name
-            dataCounty = data[i].county;
+		for (i = 0; i < data.length; i++) {
+			//Grab state name
+			dataCounty = data[i].county;
 
-            part = dataCounty.split(" ");
+			part = dataCounty.split(" ");
 
-            // if the last thing is county/borough get rid of it
-            len = part.length;
-            if (part[len-1] === "County" || part[len-1] === "Borough" || part[len-1] === "Parish") {
-                str = "";
-                for (k = 0; k < len-1; k++) {
-                    str += part[k];
-                    if (k !== len-2) {
-                        str += " ";
-                    }
-                }
-                dataCounty = str;
-            }
-            else if (part[len-2] === "Census") {
-            	str = "";
-                for (k = 0; k < len-2; k++) {
-                    str += part[k];
-                    if (k !== len-3) {
-                        str += " ";
-                    }
-                }
-                dataCounty = str;
-            }
+			// if the last thing is county/borough get rid of it
+			len = part.length;
+			if (part[len-1] === "County" || part[len-1] === "Borough" || part[len-1] === "Parish") {
+				str = "";
+				for (k = 0; k < len-1; k++) {
+					str += part[k];
+					if (k !== len-2) {
+						str += " ";
+					}
+				}
+				dataCounty = str;
+			}
+			else if (part[len-2] === "Census") {
+				str = "";
+				for (k = 0; k < len-2; k++) {
+					str += part[k];
+					if (k !== len-3) {
+						str += " ";
+					}
+				}
+				dataCounty = str;
+			}
 
-            if (dataCounty === countyName) {
-            	//Grab data value, and convert from string to float
-            	return parseFloat(data[i].test);
-            }
-           
-        }
+			if (dataCounty === countyName) {
+				//Grab data value, and convert from string to float
+				return parseFloat(data[i].test);
+			}
+
+		}
 	};
 	var map;
 	var state_abbreviations = {};
@@ -120,33 +120,33 @@ function drawTheTestMap(){
 	state_abbreviations["Wisconsin"] = "WI";
 	state_abbreviations["Wyoming"] = "WY";
 	state_abbreviations["Puerto Rico"] = "PR";
-	
+
 	//Create file paths. Used in setPaths function
 	var us_poke_data_file = " json/poke_ratio_correct2-test.csv";
 	var map_json_file = "json/us-states.json";
 	var county_path_file = "json/stateJSON/";
 	var county_poke_data_file = "test_files/";
-	
+
 	//Build map
 	map = gradientMap.setColors("#002966","#B2D1FF")
-				.setFeature("test")
-				.setRestFileName("2.csv")
-				.setFunctions(getStateValuesFunction, getCountyValuesFunction)
-				.setStateAbbreviations(state_abbreviations)
-				.setPaths(map_json_file, us_poke_data_file, county_path_file, county_poke_data_file)
-				.setStartingGradient(-1)
-				.setup();
-				
+		.setFeature("test")
+		.setRestFileName("2.csv")
+		.setFunctions(getStateValuesFunction, getCountyValuesFunction)
+		.setStateAbbreviations(state_abbreviations)
+		.setPaths(map_json_file, us_poke_data_file, county_path_file, county_poke_data_file)
+		.setStartingGradient(-1)
+		.setup();
+
 	thisMap = map;
-				
+
 	//Draw map
 	thisMap.drawMap();
 }
 
 function removeTestMap(){
-	
+
 	thisMap.removeMap();
-	
+
 }
 
 
