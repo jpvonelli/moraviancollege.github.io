@@ -159,6 +159,4 @@ function getPokeDictionary(){
 
 	return pokeDict;
 
-
-
 }
