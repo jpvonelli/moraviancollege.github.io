@@ -173,7 +173,9 @@ function drawTheTestMap(min_color, max_color){
 		}
 	};
 
+
 	var getCountyValuesFunction = function(data, countyName) {
+
 		//Merge the ag. data and GeoJSON
         //Loop through once for each ag. data value
 		var i;
@@ -214,6 +216,7 @@ function drawTheTestMap(min_color, max_color){
             if (dataCounty === countyName) {
             	//Grab data value, and convert from string to float
             	return parseFloat(data[i].test);
+
             }
            
         }
