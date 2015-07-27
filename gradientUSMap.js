@@ -490,7 +490,24 @@ function GradientMap(feature){
     };
 
     this.tooltipHtml = function(n, d){    /* function to create html content string in tooltip div. */
+        var fancy_features = [];
+        for(var x = 0; x < getFeatures().length; x++){
+        	var feat = getFeatures()[x];
+        	feat = feat.replace("_", "&nbsp");
+        	var feat_words = feat.split("&nbsp");
+        	feat = "";
+        	for(var i = 0; i < feat_words.length; i += 1) {
+
+            	feat_words[i] = feat_words[i].charAt(0).toUpperCase() + feat_words[i].slice(1);
+            	if(i != feat_words.length){
+                	feat_words[i] = feat_words[i] + "&nbsp";
+            	}
+				feat = feat + feat_words[i];
+			}
+			fancy_features.push(feat);
+		}
         if(d == 0){
+
             if(getCountyDictionaries().length === 1 && getStateDictionaries().length === 1){
                 return "<h4>"+n+"</h4><table>"+"<tr><td>"+getFeatures()[0]+":</td><td>"+d.toFixed(2)+"</td></tr>"+"</table>";
             }
@@ -539,6 +556,7 @@ function GradientMap(feature){
                 }
             }
             return return_string + "</table>";
+
         }
     };
 
