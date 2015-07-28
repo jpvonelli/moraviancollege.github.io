@@ -26,7 +26,6 @@ function GradientMap(feature){
     this.max = "0";
     this.current_gradient = 2;
 
-
     var newThis = this;
 
     this.svg = null;
@@ -243,9 +242,11 @@ function GradientMap(feature){
                         }
 
                     })
+
                     .on("click", link)
                     .on("mouseover", newThis.mouseOver)
                     .on("mouseout", newThis.mouseOut)
+
 
             })
         })
@@ -345,10 +346,12 @@ function GradientMap(feature){
         return this;
     };
 
+
     var link = function(d){
 
 
         d3.select("#stateName").remove();
+
 
         //This is where the SVG generates the state name with x and y coordinates
         newThis.grad_svg.append("text")
@@ -793,7 +796,7 @@ function GradientMap(feature){
                     })
                     .style("stroke-width", "1")
                     .style("stroke", "black")
-                    .on("click", click)
+                    .on("click", newThis.clickWithObservers)
                     .on("mouseover", newThis.mouseOver)
                     .on("mouseout", newThis.mouseOut);
 
