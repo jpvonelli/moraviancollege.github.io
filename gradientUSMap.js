@@ -63,6 +63,7 @@ function GradientMap(feature){
 
         this.makeCombo();
 
+
         this.mapDiv = d3.select("#mapContainer")
             .append("div")
             .attr("id", "mapSVG" + this.id.toString())
@@ -84,7 +85,9 @@ function GradientMap(feature){
                 .call(this.zoom)
                 .append("g");
 
+
         }else{
+
 
             this.svg = this.mapDiv.append("svg")
                 .attr("style", "border: thin solid gray; border-radius: 5px;")
@@ -128,7 +131,7 @@ function GradientMap(feature){
         if(newThis.q[0] === "Gecko") {
             var coord = d3.mouse(this);
             var c_x = (coord[0] + 100) +"px";
-            var c_y = (coord[1] + 650 + (newThis.id * 650)) + "px";
+            var c_y = (coord[1] + 680 + (newThis.id * 650)) + "px";
 
         } else{
             var x_offset = (function () {
@@ -168,8 +171,10 @@ function GradientMap(feature){
 
     this.drawMap = function() {
 
+
         d3.selectAll("path").remove();
         d3.selectAll("#stateName").remove();
+
         this.mouseOut();
         this.reset();
 
@@ -292,7 +297,9 @@ function GradientMap(feature){
         return this;
     };
 
+
     this.setColors = function(start, end){
+
         this.start_color = start;
         this.end_color = end;
         return this;
@@ -340,7 +347,9 @@ function GradientMap(feature){
 
     var link = function(d){
 
+
         d3.select("#stateName").remove();
+
         //This is where the SVG generates the state name with x and y coordinates
         newThis.grad_svg.append("text")
             .attr("x", 625)
@@ -371,7 +380,7 @@ function GradientMap(feature){
 
 
         var colorArray = makeRange(boxNum, newThis.start_color, newThis.end_color);
-        d3.selectAll(".rectangle").remove();
+        newThis.grad_svg.selectAll(".rectangle").remove();
         var i = 0;
         while(i < boxNum){
             this.grad_svg.append("rect")
@@ -387,7 +396,7 @@ function GradientMap(feature){
     };
 
     this.drawMinLabel = function(){
-        d3.select("#minLabel").remove();
+        newThis.grad_svg.select("#minLabel").remove();
         this.grad_svg.append("text")
             .attr("x", 0)
             .attr("y", 25)
@@ -400,7 +409,7 @@ function GradientMap(feature){
     };
 
     this.drawMaxLabel = function(position){
-        d3.select("#maxLabel").remove();
+        newThis.grad_svg.select("#maxLabel").remove();
         this.grad_svg.append("text")
             .attr("x", 8 + position)
             .attr("y", 25)
@@ -492,21 +501,22 @@ function GradientMap(feature){
     this.tooltipHtml = function(n, d){    /* function to create html content string in tooltip div. */
         var fancy_features = [];
         for(var x = 0; x < getFeatures().length; x++){
-        	var feat = getFeatures()[x];
-        	feat = feat.replace("_", "&nbsp");
-        	var feat_words = feat.split("&nbsp");
-        	feat = "";
-        	for(var i = 0; i < feat_words.length; i += 1) {
+            var feat = getFeatures()[x];
+            feat = feat.replace("_", "&nbsp");
+            var feat_words = feat.split("&nbsp");
+            feat = "";
+            for(var i = 0; i < feat_words.length; i += 1) {
 
-            	feat_words[i] = feat_words[i].charAt(0).toUpperCase() + feat_words[i].slice(1);
-            	if(i != feat_words.length){
-                	feat_words[i] = feat_words[i] + "&nbsp";
-            	}
-				feat = feat + feat_words[i];
-			}
-			fancy_features.push(feat);
-		}
+                feat_words[i] = feat_words[i].charAt(0).toUpperCase() + feat_words[i].slice(1);
+                if(i != feat_words.length){
+                    feat_words[i] = feat_words[i] + "&nbsp";
+                }
+                feat = feat + feat_words[i];
+            }
+            fancy_features.push(feat);
+        }
         if(d == 0){
+
 
             if(getCountyDictionaries().length === 1 && getStateDictionaries().length === 1){
                 return "<h4>"+n+"</h4><table>"+"<tr><td>"+getFeatures()[0]+":</td><td>"+d.toFixed(2)+"</td></tr>"+"</table>";
@@ -520,6 +530,7 @@ function GradientMap(feature){
                     }
                     else{
                         return_string = return_string + "<tr><td>" + getFeatures()[x] + ":</td><td>" + getCountyDictionaries()[feature][n].toFixed(2)+"</td></tr>";
+
                     }
                 }
                 return return_string + "</table>";
@@ -528,6 +539,7 @@ function GradientMap(feature){
         else if(Object.keys(d).length == 1){
             var feature = getFeatures()[0];
             var specified_value = (Math.round(d[feature][n]*100)/100).toFixed(2);
+
             var feat = feature_desired.replace(" ", "&nbsp");
             feat = feat.replace("_", "&nbsp");
             var feat_words = feat.split("&nbsp");
@@ -542,6 +554,7 @@ function GradientMap(feature){
             }
             return "<h4>"+n+"</h4><table>"+
                 "<tr><td>"+feat+":</td><td>"+(specified_value)+"</td></tr>"+
+
                 "</table>";
         }
         else{
@@ -549,6 +562,7 @@ function GradientMap(feature){
             for(var x = 0; x < Object.keys(d).length; x++){
                 var feature = getFeatures()[x];
                 if(x != Object.keys(d).length){
+
                     return_string = return_string +"<tr><td>" + feature + ":</td><td>" + (Math.round(d[feature][n]*100)/100).toFixed(2) +"</td>";
                 }
                 else{
@@ -556,6 +570,7 @@ function GradientMap(feature){
                 }
             }
             return return_string + "</table>";
+
 
         }
     };
@@ -668,7 +683,9 @@ function GradientMap(feature){
     //edit from var to this
     this.drawCounties = function(stateFile, csvFile) {
 
+
         d3.selectAll("path").remove();
+
         newThis.mouseOut();
         newThis.reset();
 
