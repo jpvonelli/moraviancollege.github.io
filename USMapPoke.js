@@ -22,6 +22,7 @@ function drawTheUSMap(min_color, max_color){
 		}
 	};
 
+
 	var getCountyValuesFunction = function(data, countyName) {
 		//Merge the ag. data and GeoJSON
 		//Loop through once for each ag. data value
