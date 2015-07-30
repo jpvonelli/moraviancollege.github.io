@@ -19,9 +19,13 @@ function GradientMap(feature){
     this.feature_desired = feature;
 
     //map variables
+    this.svgScaler = 1;
+    this.columnWidth = "col-md-12";
+    this.columnMargin;
+
     this.comboExists = false;
-    this.w = 800;
-    this.h = 600;
+    this.w = 800 * this.svgScaler;
+    this.h = 600 * this.svgScaler;
     this.min = "0";
     this.max = "0";
     this.current_gradient = 2;
@@ -50,6 +54,7 @@ function GradientMap(feature){
 
     }
 
+
     this.zoom = d3.behavior.zoom()
         .scaleExtent([1, 10])
         .on("zoom", this.zoomed);
@@ -63,15 +68,19 @@ function GradientMap(feature){
         this.makeCombo();
 
 
+
         this.mapDiv = d3.select("#mapContainer")
             .append("div")
             .attr("id", "mapSVG" + this.id.toString())
+            .attr("class", this.columnWidth)
             .style("width", this.w.toString() + "px")
             //.style("height", this.h.toString() + "px");
+
             .style("margin", "0 auto");
 
+
         this.grad_svg = this.mapDiv.append("svg")
-            .attr("width", 800)
+            .attr("width", this.svgScaler * 800)
             .attr("height", 40);
 
         if(this.canZoom){
@@ -128,10 +137,18 @@ function GradientMap(feature){
 
 
         if(newThis.q[0] === "Gecko") {
+            if(Location==0){
             var coord = d3.mouse(this);
             var c_x = (coord[0] + 100) +"px";
-            var c_y = (coord[1] + 680 + (newThis.id * 650)) + "px";
-
+            var c_y = (coord[1] + 680 + (newThis.id* 200)) + "px";}
+            else{
+            var coord = d3.mouse(this);
+            if(newThis.id > 2){
+            var c_x = (coord[0] + 100+(newThis.id*125)) +"px"
+            var c_y = (coord[1] + 680+(newThis.id* 100)) + "px";}
+            else{
+            var c_x = (coord[0] + 100+(newThis.id*450)) +"px";
+            var c_y = (coord[1] + 680) + "px";}}
         } else{
             var x_offset = (function () {
                 var offset_temp = window.getComputedStyle(document.getElementById("Main_Content")).marginLeft;
@@ -140,7 +157,7 @@ function GradientMap(feature){
             })();
 
             var c_x = event.screenX - x_offset +"px";
-            var c_y = window.pageYOffset + event.screenY - 300 + "px";
+            var c_y = window.pageYOffset + event.screenY - 200 + "px";
         }
 
         //state
@@ -180,7 +197,9 @@ function GradientMap(feature){
         //Define map projection
         this.projection = d3.geo.albersUsa()
             .translate([this.w/2, this.h/2])
+
             .scale([900]);
+
 
         //Path of GeoJSON
         this.path = d3.geo.path()
@@ -228,7 +247,7 @@ function GradientMap(feature){
                     .attr("stroke-width", "1")
                     .style("fill", function(d) {
                         //Get data value
-                        d.properties.value = getStateValuesFunction(data, d.properties.name);
+                        d.properties.value = getStateValuesFunction(data, d.properties.name, newThis.feature_desired);
                         var value = d.properties.value;
 
                         if(!continuous && value) {//If value exists...
@@ -275,7 +294,9 @@ function GradientMap(feature){
             newThis.drawBoxes(val, newThis.max);
         }
 
+
         d3.selectAll("path")
+=
             .style("fill", function(d){
                 //Get data value
                 var value = d.properties.value;
@@ -299,7 +320,9 @@ function GradientMap(feature){
     };
 
 
+
     this.setColors = function(start, end){
+
 
         this.start_color = start;
         this.end_color = end;
@@ -355,7 +378,7 @@ function GradientMap(feature){
 
         //This is where the SVG generates the state name with x and y coordinates
         newThis.grad_svg.append("text")
-            .attr("x", 625)
+            .attr("x", this.svgScaler * 625)
             .attr("y", 30)
             .text(d.properties.name)
             .attr("fill", "black")
@@ -503,6 +526,7 @@ function GradientMap(feature){
 
     this.tooltipHtml = function(n, d){    /* function to create html content string in tooltip div. */
         var fancy_features = [];
+        console.log(d);
         for(var x = 0; x < getFeatures().length; x++){
             var feat = getFeatures()[x];
             feat = feat.replace("_", "&nbsp");
@@ -777,7 +801,9 @@ function GradientMap(feature){
                             d.properties.NAME += " City";
                         }
 
+
                         d.properties.value = newThis.getCountyValuesFunction(data, d.properties.NAME);
+
                         var value = d.properties.value;
 
                         if (newThis.max == newThis.min) {
