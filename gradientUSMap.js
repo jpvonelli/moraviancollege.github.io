@@ -29,6 +29,9 @@ function GradientMap(feature){
     this.min = "0";
     this.max = "0";
     this.current_gradient = 2;
+    this.manager = null;
+    this.observers = [];
+
 
     var newThis = this;
 
@@ -54,20 +57,35 @@ function GradientMap(feature){
 
     }
 
+    this.zoomWithObservers = function(){
+
+        newThis.zoomed();
+
+        for(var i = 0; i < newThis.observers.length; i += 1){
+
+            newThis.observers[i].zoomed();
+
+        }
+
+    }
+
+    this.getFeat = function() {
+
+        return newThis.feature_desired;
+
+    }
 
     this.zoom = d3.behavior.zoom()
         .scaleExtent([1, 10])
-        .on("zoom", this.zoomed);
+        .on("zoom", this.zoomWithObservers);
 
     this.setup = function(){
 
-        d3.select("#mapContainer")
-            .append("div")
-            .attr("id", "comboDiv" + this.id.toString());
+        //d3.select("#mapContainer")
+        //    .append("div")
+        //    .attr("id", "comboDiv" + this.id.toString());
 
-        this.makeCombo();
-
-
+        //this.makeCombo();
 
         this.mapDiv = d3.select("#mapContainer")
             .append("div")
@@ -75,9 +93,7 @@ function GradientMap(feature){
             .attr("class", this.columnWidth)
             .style("width", this.w.toString() + "px")
             //.style("height", this.h.toString() + "px");
-
-            .style("margin", "0 auto");
-
+            .style("margin", "0" + newThis.columnMargin);
 
         this.grad_svg = this.mapDiv.append("svg")
             .attr("width", this.svgScaler * 800)
@@ -93,9 +109,7 @@ function GradientMap(feature){
                 .call(this.zoom)
                 .append("g");
 
-
-        }else{
-
+        } else {
 
             this.svg = this.mapDiv.append("svg")
                 .attr("style", "border: thin solid gray; border-radius: 5px;")
@@ -130,6 +144,18 @@ function GradientMap(feature){
 
     }
 
+    this.mouseOutWithObservers = function(){
+
+        newThis.mouseOut();
+
+        for (var i = 0; i < newThis.observers.length; i += 1){
+
+            newThis.observers[i].mouseOut();
+
+        }
+
+    }
+    var Location=this.id%2;
     this.mouseOver = function(d){
 
 
@@ -138,17 +164,17 @@ function GradientMap(feature){
 
         if(newThis.q[0] === "Gecko") {
             if(Location==0){
-            var coord = d3.mouse(this);
-            var c_x = (coord[0] + 100) +"px";
-            var c_y = (coord[1] + 680 + (newThis.id* 200)) + "px";}
+                var coord = d3.mouse(this);
+                var c_x = (coord[0] + 100) +"px";
+                var c_y = (coord[1] + 680 + (newThis.id* 200)) + "px";}
             else{
-            var coord = d3.mouse(this);
-            if(newThis.id > 2){
-            var c_x = (coord[0] + 100+(newThis.id*125)) +"px"
-            var c_y = (coord[1] + 680+(newThis.id* 100)) + "px";}
-            else{
-            var c_x = (coord[0] + 100+(newThis.id*450)) +"px";
-            var c_y = (coord[1] + 680) + "px";}}
+                var coord = d3.mouse(this);
+                if(newThis.id > 2){
+                    var c_x = (coord[0] + 100+(newThis.id*125)) +"px"
+                    var c_y = (coord[1] + 680+(newThis.id* 100)) + "px";}
+                else{
+                    var c_x = (coord[0] + 100+(newThis.id*450)) +"px";
+                    var c_y = (coord[1] + 680) + "px";}}
         } else{
             var x_offset = (function () {
                 var offset_temp = window.getComputedStyle(document.getElementById("Main_Content")).marginLeft;
@@ -185,21 +211,29 @@ function GradientMap(feature){
 
     }
 
+    this.mouseOverWithObservers = function(d){
+
+        newThis.mouseOver(d);
+
+        for (var i = 0; i < newThis.observers.length; i += 1){
+
+            newThis.observers[i].mouseOver(d);
+
+        }
+
+    }
+
     this.drawMap = function() {
 
-
-        d3.selectAll("path").remove();
-        d3.selectAll("#stateName").remove();
-
+        newThis.svg.selectAll("path").remove();
+        newThis.grad_svg.selectAll("#stateName").remove();
         this.mouseOut();
         this.reset();
 
         //Define map projection
         this.projection = d3.geo.albersUsa()
             .translate([this.w/2, this.h/2])
-
-            .scale([900]);
-
+            .scale([this.svgScaler * 900]);
 
         //Path of GeoJSON
         this.path = d3.geo.path()
@@ -261,11 +295,9 @@ function GradientMap(feature){
                         }
 
                     })
-
-                    .on("click", link)
+                    .on("click", newThis.linkWithObservers)
                     .on("mouseover", newThis.mouseOver)
                     .on("mouseout", newThis.mouseOut)
-
 
             })
         })
@@ -273,6 +305,18 @@ function GradientMap(feature){
         return this;
 
     };
+
+    this.linkWithObservers = function(d){
+
+        newThis.link(d);
+
+        for (var i = 0; i < newThis.observers.length; i += 1){
+
+            newThis.observers[i].link(d);
+
+        }
+
+    }
 
     this.change_gradient = function(val) {
 
@@ -294,9 +338,7 @@ function GradientMap(feature){
             newThis.drawBoxes(val, newThis.max);
         }
 
-
-        d3.selectAll("path")
-=
+        d3.select("#mapSVG" + newThis.id.toString()).selectAll("path")
             .style("fill", function(d){
                 //Get data value
                 var value = d.properties.value;
@@ -319,16 +361,21 @@ function GradientMap(feature){
         return this;
     };
 
+    this.setScaler = function(scale, column_width, column_margins) {
+        this.svgScaler = scale;
+        this.columnWidth =column_width;
+        this.columnMargin = column_margins;
+        this.w = 800 * this.svgScaler;
+        this.h = 600 * this.svgScaler;
 
+        return this;
+    };
 
     this.setColors = function(start, end){
-
-
         this.start_color = start;
         this.end_color = end;
         return this;
     };
-
     this.setFeature = function(feature){
         this.feature_desired = feature;
         return this;
@@ -369,13 +416,9 @@ function GradientMap(feature){
         return this;
     };
 
+    this.link = function(d){
 
-    var link = function(d){
-
-
-        d3.select("#stateName").remove();
-
-
+        newThis.grad_svg.select("#stateName").remove();
         //This is where the SVG generates the state name with x and y coordinates
         newThis.grad_svg.append("text")
             .attr("x", this.svgScaler * 625)
@@ -543,21 +586,18 @@ function GradientMap(feature){
             fancy_features.push(feat);
         }
         if(d == 0){
-
-
-            if(getCountyDictionaries().length === 1 && getStateDictionaries().length === 1){
-                return "<h4>"+n+"</h4><table>"+"<tr><td>"+getFeatures()[0]+":</td><td>"+d.toFixed(2)+"</td></tr>"+"</table>";
+            if(Object.keys(getCountyDictionaries()).length && Object.keys(getStateDictionaries()).length === 1){
+                return "<h4>"+n+"</h4><table>"+"<tr><td>"+fancy_features[0]+":</td><td> "+d.toFixed(2)+"</td></tr>"+"</table>";
             }
             else{
-                var return_string = "<h4>"+n+"</h4><table>"+"<tr><td>"+getFeatures()[0]+":</td><td>"+d.toFixed(2)+"</td></tr>";
+                var return_string = "<h4>"+n+"</h4><table>"+"<tr><td>"+fancy_features[0]+":</td><td>"+d.toFixed(2)+"</td></tr>";
                 for(var x = 1; x < getFeatures().length; x++){
                     var feature = getFeatures()[x];
                     if(getCountyDictionaries()[feature][n] === undefined){
-                        return_string = return_string + "<tr><td>" + getFeatures()[x] + ":</td><td>" + d.toFixed(2)+"</td></tr>";
+                        return_string = return_string + "<tr><td>" + fancy_features[x] + ":</td><td>" + d.toFixed(2)+"</td></tr>";
                     }
                     else{
-                        return_string = return_string + "<tr><td>" + getFeatures()[x] + ":</td><td>" + getCountyDictionaries()[feature][n].toFixed(2)+"</td></tr>";
-
+                        return_string = return_string + "<tr><td>" + fancy_features[x] + ":</td><td>" + getCountyDictionaries()[feature][n].toFixed(2)+"</td></tr>";
                     }
                 }
                 return return_string + "</table>";
@@ -566,22 +606,8 @@ function GradientMap(feature){
         else if(Object.keys(d).length == 1){
             var feature = getFeatures()[0];
             var specified_value = (Math.round(d[feature][n]*100)/100).toFixed(2);
-
-            var feat = feature_desired.replace(" ", "&nbsp");
-            feat = feat.replace("_", "&nbsp");
-            var feat_words = feat.split("&nbsp");
-            feat = "";
-            for(var i = 0; i < feat_words.length; i += 1) {
-
-                feat_words[i] = feat_words[i].charAt(0).toUpperCase() + feat_words[i].slice(1);
-                if(i != feat_words.length){
-                    feat_words[i] = feat_words[i] + "&nbsp";
-                }
-                feat = feat + feat_words[i];
-            }
             return "<h4>"+n+"</h4><table>"+
-                "<tr><td>"+feat+":</td><td>"+(specified_value)+"</td></tr>"+
-
+                "<tr><td>"+fancy_features[0]+":</td><td>"+(specified_value)+"</td></tr>"+
                 "</table>";
         }
         else{
@@ -589,16 +615,13 @@ function GradientMap(feature){
             for(var x = 0; x < Object.keys(d).length; x++){
                 var feature = getFeatures()[x];
                 if(x != Object.keys(d).length){
-
-                    return_string = return_string +"<tr><td>" + feature + ":</td><td>" + (Math.round(d[feature][n]*100)/100).toFixed(2) +"</td>";
+                    return_string = return_string +"<tr><td>" + fancy_features[x] + ":</td><td>" + (Math.round(d[feature][n]*100)/100).toFixed(2) +"</td>";
                 }
                 else{
-                    return_string = return_string + "<td>" + feature + ":</td><td>" + (Math.round(d[feature][n]*100)/100).toFixed(2)+"</td></tr>";
+                    return_string = return_string + "<td>" + fancy_features[x] + ":</td><td>" + (Math.round(d[feature][n]*100)/100).toFixed(2)+"</td></tr>";
                 }
             }
             return return_string + "</table>";
-
-
         }
     };
 
@@ -710,9 +733,7 @@ function GradientMap(feature){
     //edit from var to this
     this.drawCounties = function(stateFile, csvFile) {
 
-
-        d3.selectAll("path").remove();
-
+        newThis.svg.selectAll("path").remove();
         newThis.mouseOut();
         newThis.reset();
 
@@ -801,9 +822,7 @@ function GradientMap(feature){
                             d.properties.NAME += " City";
                         }
 
-
-                        d.properties.value = newThis.getCountyValuesFunction(data, d.properties.NAME);
-
+                        d.properties.value = newThis.getCountyValuesFunction(data, d.properties.NAME, newThis.feature_desired);
                         var value = d.properties.value;
 
                         if (newThis.max == newThis.min) {
@@ -842,6 +861,28 @@ function GradientMap(feature){
         //newThis.drawMap(map_json_file, poke_data);
         newThis.drawMap();
     };
+
+    this.setManager = function(man){
+        this.manager = man;
+        return this;
+    }
+
+    this.addObserver = function(map){
+        this.observers.push(map);
+        return this;
+    }
+
+    this.clickWithObservers = function(){
+
+        newThis.drawMap();
+
+        for (var i = 0; i < newThis.observers.length; i += 1){
+
+            newThis.observers[i].drawMap();
+
+        }
+
+    }
 
     return this;
 
